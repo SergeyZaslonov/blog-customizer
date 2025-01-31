@@ -4,8 +4,14 @@ import { Button } from 'src/ui/button';
 import styles from './ArticleParamsForm.module.scss';
 import clsx from 'clsx';
 import { useState } from 'react';
+import { ArticleStateType } from 'src/constants/articleProps';
 
-export const ArticleParamsForm = () => {
+type ArticleParamsProps = {
+	articleState: ArticleStateType;
+	setArticleState: (articleState: ArticleStateType) => void;
+};
+
+export const ArticleParamsForm = (props: ArticleParamsProps) => {
 	const [isOpen, setOpen] = useState(false);
 	return (
 		<>
