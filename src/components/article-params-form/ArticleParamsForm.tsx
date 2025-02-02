@@ -3,7 +3,7 @@ import { Button } from 'src/ui/button';
 
 import styles from './ArticleParamsForm.module.scss';
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import {
 	ArticleStateType,
 	backgroundColors,
@@ -27,6 +27,7 @@ type ArticleParamsProps = {
 export const ArticleParamsForm = (props: ArticleParamsProps) => {
 	const [isOpen, setOpen] = useState(false);
 	const [selectedState, setSelectedState] = useState(props.articleState);
+	const refAside = useRef<HTMLElement>(null);
 
 	const onSelectionChanged = (
 		articleStateKey: keyof ArticleStateType,
@@ -43,10 +44,26 @@ export const ArticleParamsForm = (props: ArticleParamsProps) => {
 		props.setArticleState(defaultArticleState);
 	};
 
+	const onMouseDownOutside = (event: MouseEvent) => {
+		if (refAside.current && !refAside.current.contains(event.target as Node)) {
+			setOpen(false);
+		}
+	};
+
+	useLayoutEffect(() => {
+		if (isOpen) {
+			document.addEventListener('mousedown', onMouseDownOutside);
+		}
+		return () => {
+			document.removeEventListener('mousedown', onMouseDownOutside);
+		};
+	}, [isOpen]);
+
 	return (
 		<>
 			<ArrowButton isOpen={isOpen} onClick={() => setOpen(!isOpen)} />
 			<aside
+				ref={refAside}
 				className={clsx(styles.container, isOpen && styles.container_open)}>
 				<form
 					className={styles.form}
