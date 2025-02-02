@@ -8,6 +8,7 @@ import {
 	ArticleStateType,
 	backgroundColors,
 	contentWidthArr,
+	defaultArticleState,
 	fontColors,
 	fontFamilyOptions,
 	fontSizeOptions,
@@ -25,19 +26,34 @@ type ArticleParamsProps = {
 
 export const ArticleParamsForm = (props: ArticleParamsProps) => {
 	const [isOpen, setOpen] = useState(false);
-	const [selectedState,setSelectedState] = useState(props.articleState);
+	const [selectedState, setSelectedState] = useState(props.articleState);
 
-	const onSelectionChanged=(articleStateKey:keyof ArticleStateType, selected: OptionType) => {
-		console.log(articleStateKey)
-		setSelectedState((prevState) => ({...prevState, [articleStateKey]: selected }));
-	}
+	const onSelectionChanged = (
+		articleStateKey: keyof ArticleStateType,
+		selected: OptionType
+	) => {
+		setSelectedState((prevState) => ({
+			...prevState,
+			[articleStateKey]: selected,
+		}));
+	};
+
+	const onResetClick = () => {
+		setSelectedState(defaultArticleState);
+		props.setArticleState(defaultArticleState);
+	};
 
 	return (
 		<>
 			<ArrowButton isOpen={isOpen} onClick={() => setOpen(!isOpen)} />
 			<aside
 				className={clsx(styles.container, isOpen && styles.container_open)}>
-				<form className={styles.form}>
+				<form
+					className={styles.form}
+					onSubmit={(event) => {
+						event.preventDefault();
+						props.setArticleState(selectedState);
+					}}>
 					<Text as='h2' size={31} weight={800} uppercase>
 						Задайте параметры
 					</Text>
@@ -45,36 +61,49 @@ export const ArticleParamsForm = (props: ArticleParamsProps) => {
 						options={fontFamilyOptions}
 						selected={selectedState.fontFamilyOption}
 						title={'шрифт'}
-						onChange={(selected) => onSelectionChanged('fontFamilyOption',selected) }
+						onChange={(selected) =>
+							onSelectionChanged('fontFamilyOption', selected)
+						}
 					/>
 					<RadioGroup
 						name='fontSizeOptions'
 						options={fontSizeOptions}
 						selected={selectedState.fontSizeOption}
 						title={'размер шрифта'}
-						onChange={(selected) => onSelectionChanged('fontSizeOption',selected) }
+						onChange={(selected) =>
+							onSelectionChanged('fontSizeOption', selected)
+						}
 					/>
 					<Select
 						options={fontColors}
 						selected={selectedState.fontColor}
 						title={'цвет шрифта'}
-						onChange={(selected) => onSelectionChanged('fontColor',selected) }
+						onChange={(selected) => onSelectionChanged('fontColor', selected)}
 					/>
 					<Separator />
 					<Select
 						options={backgroundColors}
 						selected={selectedState.backgroundColor}
 						title={'цвет фона'}
-						onChange={(selected) => onSelectionChanged('backgroundColor',selected) }
+						onChange={(selected) =>
+							onSelectionChanged('backgroundColor', selected)
+						}
 					/>
 					<Select
 						options={contentWidthArr}
 						selected={selectedState.contentWidth}
 						title={'ширина контента'}
-						onChange={(selected) => onSelectionChanged('contentWidth',selected) }
+						onChange={(selected) =>
+							onSelectionChanged('contentWidth', selected)
+						}
 					/>
 					<div className={styles.bottomContainer}>
-						<Button title='Сбросить' htmlType='reset' type='clear' />
+						<Button
+							title='Сбросить'
+							htmlType='reset'
+							type='clear'
+							onClick={onResetClick}
+						/>
 						<Button title='Применить' htmlType='submit' type='apply' />
 					</div>
 				</form>
